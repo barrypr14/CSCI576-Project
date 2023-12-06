@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-wEmeIV1mKuiNpC+IOBjI7aAzPcEZeedi5yW5f2yOq55WWLwNGmvvx4Um1vskeMj0" crossorigin="anonymous">
+    <title>Local Video Player</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Local Video Player</h1>
+
+        <form method="post" action="/upload" enctype="multipart/form-data">
+            <label for="video">Query your subvideo (.mp4):</label>
+            <input type="file" id="video" name="video" accept="video/" required>
+            <br>
+            <button class="btn btn-info"type="submit">Query</button>
+        </form>        
+    </div>
+    {% if video_path %}
+        <div class="container mt-5">
+            <div>
+                <h2>Video:</h2>
+                <video id="myVideo" width="640" height="360" controls>
+                    <source src= "{{ video_path }}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>                
+            </div>     
+            <div class="row">
+                <div class="col-1" id="play"><button class="btn btn-primary">Play</button></div>
+                <div class="col-1" id="reset"><button class="btn btn-danger">Reset</button></div>
+                <div class="col-1" id="pause"><button class="btn btn-warning">Pause</button></div>
+            </div>            
+        </div>
+        <div class="container mt-5">
+            <h4>The query time cost {{ duration }}s</h4>
+            <h4>The frame start at {{ start_frame }}</h4>
+        </div>
+        <script>
+            $(document).ready(function() {
+                var video = $('#myVideo')[0];  // Use [0] to get the DOM element from the jQuery object
+                video.currentTime = {{ start_time }};
+
+                $('#play').on('click', function(){
+                    video.play();
+                });
+
+                $('#pause').on('click', function() {
+                    video.pause();
+                }) ;
+
+                $('#reset').on('click', function() {
+                    video.currentTime = {{ start_time }};
+                    video.pause();
+                });
+
+                $(video).on('timeupdate', function(){
+                    if (video.currentTime >= {{ end_time }}){
+                        video.pause();
+                    }          
+                });
+            });   
+        </script>
+
+
+    {% endif %}
+</body>
+</html>
+
